@@ -1,0 +1,8 @@
+# Runtime dependencies (pinned versions that the test suite was run against)
+PyYAML==6.0.3
+python-evtx==0.8.1
+hexdump==3.3          # dependency of python-evtx
+rich==15.0.0          # optional: coloured console table (plain-text fallback without it)
+markdown-it-py==4.2.0 # dependency of rich
+mdurl==0.1.2          # dependency of rich
+Pygments==2.21.0      # dependency of rich

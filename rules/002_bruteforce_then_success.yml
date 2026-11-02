@@ -1,0 +1,39 @@
+id: WTH-002
+title: Brute force followed by successful logon
+description: >
+  Five or more failed logons (4625) followed by a successful network or RDP
+  logon (4624, LogonType 3 or 10) from the SAME source IP within 10 minutes.
+  This suggests the guessing worked and the attacker now has valid credentials.
+severity: critical
+mitre:
+  technique_id: T1110
+  technique_name: Brute Force
+  tactic: Credential Access
+sequence:
+  window_seconds: 600
+  group_by: [IpAddress]
+  steps:
+    - name: failed_logons
+      event_ids: [4625]
+      min_count: 5
+      conditions:
+        - field: IpAddress
+          op: equals
+          value: ["-", ""]
+          negate: true
+    - name: successful_logon
+      event_ids: [4624]
+      conditions:
+        - field: LogonType
+          op: equals
+          value: ["3", "10"]   # 3 = network (SMB etc.), 10 = RemoteInteractive (RDP)
+response: >
+  Treat as a likely account compromise. Disable or reset the password of the
+  account that logged on, terminate its active sessions, and isolate the host
+  if follow-on activity is seen. Review everything that account did after the
+  logon time (process creation, new users, services).
+false_positives:
+  - A user who forgot their password several times and then got it right from
+    a shared IP (e.g. behind NAT) - verify with the user
+references:
+  - https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624

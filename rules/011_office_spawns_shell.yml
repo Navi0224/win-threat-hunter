@@ -1,0 +1,44 @@
+id: WTH-011
+title: Office application spawned a shell or script host (Sysmon)
+description: >
+  Sysmon process creation (Event 1) where Word, Excel, PowerPoint, Outlook,
+  Publisher or OneNote starts cmd, PowerShell, a script host, mshta, rundll32
+  or regsvr32. Office documents rarely need to start these; it is a classic
+  sign of a malicious macro or exploit from a phishing email.
+severity: high
+mitre:
+  technique_id: T1204.002
+  technique_name: "User Execution: Malicious File"
+  tactic: Execution
+detection:
+  event_ids: [1]
+  channel: Microsoft-Windows-Sysmon/Operational
+  conditions:
+    - field: ParentImage
+      op: endswith
+      value:
+        - "\\winword.exe"
+        - "\\excel.exe"
+        - "\\powerpnt.exe"
+        - "\\outlook.exe"
+        - "\\mspub.exe"
+        - "\\onenote.exe"
+    - field: Image
+      op: endswith
+      value:
+        - "\\cmd.exe"
+        - "\\powershell.exe"
+        - "\\pwsh.exe"
+        - "\\wscript.exe"
+        - "\\cscript.exe"
+        - "\\mshta.exe"
+        - "\\rundll32.exe"
+        - "\\regsvr32.exe"
+response: >
+  Identify the document that was opened (check recent files / email
+  attachments of the user), isolate the host, collect the document and child
+  process command lines, and search other mailboxes for the same email.
+false_positives:
+  - Add-ins or macros approved by the business that call scripts (rare - allow-list by command line)
+references:
+  - https://attack.mitre.org/techniques/T1566/001/

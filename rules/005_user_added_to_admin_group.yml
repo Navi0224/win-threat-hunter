@@ -1,0 +1,32 @@
+id: WTH-005
+title: Member added to a privileged group
+description: >
+  An account was added to a privileged security group: local group (4732),
+  global group (4728) or universal group (4756). Gaining admin rights is a key
+  attacker goal. For these events TargetUserName holds the GROUP name and
+  MemberName / MemberSid identify who was added.
+severity: high
+mitre:
+  technique_id: T1098
+  technique_name: Account Manipulation
+  tactic: Persistence
+detection:
+  event_ids: [4732, 4728, 4756]
+  conditions:
+    - field: TargetUserName
+      op: equals
+      value:
+        - Administrators
+        - Remote Desktop Users
+        - Backup Operators
+        - Domain Admins
+        - Enterprise Admins
+        - Schema Admins
+response: >
+  Verify the change against an approved request. If unapproved, remove the
+  member from the group immediately, disable the added account and
+  investigate the account that made the change (SubjectUserName).
+false_positives:
+  - Planned privilege grants by IT (should have a ticket)
+references:
+  - https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4732

@@ -1,0 +1,37 @@
+id: WTH-009
+title: Service installed with suspicious binary path
+description: >
+  A new service (7045) whose ImagePath runs a command interpreter, uses
+  encoded PowerShell, or lives in a user-writable folder (Temp, Public,
+  AppData, ProgramData). Legitimate services are normally signed binaries in
+  Program Files or System32. Tools like PsExec and many attack frameworks
+  create services exactly like this.
+severity: high
+mitre:
+  technique_id: T1543.003
+  technique_name: "Create or Modify System Process: Windows Service"
+  tactic: Persistence
+detection:
+  event_ids: [7045]
+  conditions:
+    - field: ImagePath
+      op: contains
+      value:
+        - "cmd.exe"
+        - "%comspec%"
+        - "powershell"
+        - "pwsh"
+        - "rundll32"
+        - "mshta"
+        - "\\temp\\"
+        - "\\users\\public\\"
+        - "\\appdata\\"
+        - "\\programdata\\"
+response: >
+  Stop and disable the service, preserve the binary/script it points to for
+  analysis, and identify the account that installed it (via 4697 or the
+  logon session). Isolate the host if the payload is confirmed malicious.
+false_positives:
+  - Poorly packaged software that installs services under ProgramData
+references:
+  - https://attack.mitre.org/techniques/T1569/002/

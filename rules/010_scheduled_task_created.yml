@@ -1,0 +1,20 @@
+id: WTH-010
+title: Scheduled task created
+description: >
+  A scheduled task was created (4698). Tasks let an attacker run code on a
+  schedule or at logon - a simple, common persistence method.
+severity: medium
+mitre:
+  technique_id: T1053.005
+  technique_name: "Scheduled Task/Job: Scheduled Task"
+  tactic: Persistence
+detection:
+  event_ids: [4698]
+response: >
+  Review the task's action in TaskContent (what does it run, as which user,
+  how often?). Delete unapproved tasks and collect the referenced script or
+  binary for analysis.
+false_positives:
+  - Software updaters (browsers, drivers) create tasks routinely - allow-list known task names
+references:
+  - https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4698

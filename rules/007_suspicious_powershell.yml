@@ -1,0 +1,40 @@
+id: WTH-007
+title: Suspicious PowerShell - encoded command or download cradle
+description: >
+  PowerShell script block (4104) or process creation (4688 / Sysmon 1) that
+  uses an encoded command (-enc and its short forms), decodes Base64 at
+  runtime, or downloads and executes code (IEX + DownloadString/WebClient).
+  These patterns hide intent and are common in malware loaders.
+severity: high
+mitre:
+  technique_id: T1059.001
+  technique_name: "Command and Scripting Interpreter: PowerShell"
+  tactic: Execution
+detection:
+  event_ids: [4104, 4688, 1]
+  match: any
+  conditions:
+    # -e / -ec / -enc / -EncodedCommand followed by a long Base64 blob
+    - field: [CommandLine, ScriptBlockText]
+      op: regex
+      value: '(^|\s)[-/](e|ec|en|enc\w*)\s+[A-Za-z0-9+/=]{16,}'
+    - field: [CommandLine, ScriptBlockText]
+      op: contains
+      value:
+        - frombase64string
+        - downloadstring
+        - downloadfile
+        - net.webclient
+        - invoke-webrequest
+        - "iex("
+        - "iex ("
+        - invoke-expression
+response: >
+  Decode the payload (see the Note on the finding) and identify what it
+  downloads or runs. Block any URLs/IPs it contacts, isolate the host if code
+  was executed, and find the parent process that launched PowerShell.
+false_positives:
+  - Some management / deployment tools (SCCM, Intune scripts) use -EncodedCommand
+  - Admin scripts that legitimately download modules - allow-list them by path or signer
+references:
+  - https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows

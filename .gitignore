@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.venv/
+venv/
+
+# Generated reports
+out/
+reports/
+
+# Never commit real logs from your own machine - they contain usernames,
+# hostnames and IPs. Keep them outside the repo or in this ignored folder.
+my-logs/
+*.evtx
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,21 @@
+id: WTH-006
+title: Security event log cleared
+description: >
+  The Security log was cleared (1102), or another log was cleared (System
+  event 104). Attackers clear logs to remove evidence; legitimate clearing is
+  rare on servers and workstations that forward logs.
+severity: high
+mitre:
+  technique_id: T1070.001
+  technique_name: "Indicator Removal: Clear Windows Event Logs"
+  tactic: Defense Evasion
+detection:
+  event_ids: [1102, 104]
+response: >
+  Treat the host as potentially compromised. Pull the logs that were already
+  forwarded to the SIEM for the period before the clear, identify the account
+  that cleared the log (SubjectUserName) and review its recent activity.
+false_positives:
+  - Administrators clearing logs during troubleshooting or re-imaging
+references:
+  - https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-1102

@@ -1,0 +1,33 @@
+id: WTH-001
+title: Brute force - many failed logons from one source
+description: >
+  Ten or more failed logons (4625) from the same source IP within 5 minutes.
+  One or two failures are normal (typos); a fast burst from one address is
+  typical of password-guessing tools against RDP or SMB.
+severity: medium
+mitre:
+  technique_id: T1110.001
+  technique_name: "Brute Force: Password Guessing"
+  tactic: Credential Access
+detection:
+  event_ids: [4625]
+  conditions:
+    # Local console failures have no source IP ("-"); exclude them so that
+    # one person mistyping at their own keyboard is not grouped as "an attacker".
+    - field: IpAddress
+      op: equals
+      value: ["-", ""]
+      negate: true
+threshold:
+  count: 10
+  window_seconds: 300
+  group_by: [IpAddress]
+response: >
+  Identify the source IP (internal host or internet?). Block it at the
+  firewall / VPN if external. Check whether any logon from that IP succeeded
+  (see WTH-002). Confirm targeted accounts have MFA and lockout policy enabled.
+false_positives:
+  - A misconfigured service or scheduled task retrying an old password
+  - Vulnerability scanners authorised by the security team
+references:
+  - https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4625

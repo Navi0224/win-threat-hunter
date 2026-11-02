@@ -1,0 +1,23 @@
+id: WTH-008
+title: New service installed
+description: >
+  A new Windows service was installed (System log, 7045). Services run as
+  SYSTEM and start at boot, so they are a popular persistence and
+  privilege-escalation method. On its own this is low severity because
+  software installs create services too - WTH-009 raises the severity when
+  the service binary looks malicious.
+severity: low
+mitre:
+  technique_id: T1543.003
+  technique_name: "Create or Modify System Process: Windows Service"
+  tactic: Persistence
+detection:
+  event_ids: [7045]
+response: >
+  Check that the service name and ImagePath match known, signed software
+  that was recently installed. Unknown services should be escalated.
+false_positives:
+  - Legitimate software installation and updates
+  - Driver installation
+references:
+  - https://attack.mitre.org/techniques/T1543/003/

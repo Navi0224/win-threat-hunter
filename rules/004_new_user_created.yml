@@ -1,0 +1,21 @@
+id: WTH-004
+title: New local user account created
+description: >
+  A user account was created (4720). Attackers create accounts to keep access
+  (persistence) even if the original compromised password is changed.
+severity: medium
+mitre:
+  technique_id: T1136.001
+  technique_name: "Create Account: Local Account"
+  tactic: Persistence
+detection:
+  event_ids: [4720]
+response: >
+  Confirm with IT whether the account creation was approved (change ticket).
+  If not, disable the account, record who created it (SubjectUserName) and
+  investigate that creator account for compromise.
+false_positives:
+  - Normal onboarding by IT administrators
+  - Software installers that create service accounts
+references:
+  - https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4720
